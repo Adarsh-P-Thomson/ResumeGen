@@ -20,33 +20,37 @@ export class HTMLResumeTemplate {
             box-sizing: border-box;
         }
         
+        @page {
+            size: Letter;
+            margin: 0.5in 0.75in;
+        }
+        
         body {
             font-family: 'Times New Roman', Times, serif;
             font-size: 11pt;
-            line-height: 1.4;
+            line-height: 1.25;
             color: #000;
             background: white;
-            padding: 0.75in 0.75in;
-            max-width: 8.5in;
-            margin: 0 auto;
+            margin: 0;
+            padding: 0;
         }
         
         .header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 14px;
         }
         
         .name {
-            font-size: 16pt;
+            font-size: 15pt;
             font-weight: bold;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 5px;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
         }
         
         .contact-info {
             font-size: 10pt;
-            margin-bottom: 3px;
+            margin-bottom: 2px;
         }
         
         .links {
@@ -54,59 +58,72 @@ export class HTMLResumeTemplate {
         }
         
         .section {
-            margin-bottom: 18px;
+            margin-bottom: 12px;
+            page-break-inside: avoid;
         }
         
         .section-header {
-            font-size: 12pt;
+            font-size: 11pt;
             font-weight: bold;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 5px;
+            letter-spacing: 0.3px;
+            margin-bottom: 4px;
             border-bottom: 1px solid #000;
-            padding-bottom: 2px;
+            padding-bottom: 1px;
+            page-break-after: avoid;
         }
         
         .entry {
-            margin-bottom: 12px;
+            margin-bottom: 8px;
+            page-break-inside: avoid;
         }
         
         .entry-header {
             display: flex;
             justify-content: space-between;
             font-weight: bold;
-            margin-bottom: 2px;
+            margin-bottom: 1px;
+            font-size: 11pt;
         }
         
         .entry-title {
-            margin-bottom: 3px;
+            margin-bottom: 2px;
+            font-size: 11pt;
         }
         
         .bullets {
-            margin-left: 20px;
-            margin-top: 3px;
+            margin-left: 18px;
+            margin-top: 2px;
+            padding-left: 0;
         }
         
         .bullets li {
-            margin-bottom: 3px;
-            line-height: 1.3;
+            margin-bottom: 2px;
+            line-height: 1.2;
+            font-size: 11pt;
         }
         
         .tech-stack {
             font-style: italic;
-            margin-bottom: 3px;
+            margin-bottom: 2px;
             font-size: 10pt;
         }
         
         .project-links {
-            font-size: 10pt;
-            margin-top: 3px;
-            margin-left: 20px;
+            font-size: 9pt;
+            margin-top: 2px;
+            margin-left: 18px;
         }
         
         @media print {
             body {
                 padding: 0;
+            }
+            .section {
+                page-break-inside: avoid;
+            }
+            .entry {
+                page-break-inside: avoid;
             }
         }
     </style>
@@ -131,6 +148,16 @@ export class HTMLResumeTemplate {
     ${this.generateExperienceSection(resume)}
     
     ${resume.projects && resume.projects.length > 0 ? this.generateProjectsSection(resume) : ''}
+    
+    ${resume.publications && resume.publications.length > 0 ? this.generatePublicationsSection(resume) : ''}
+    
+    ${resume.patents && resume.patents.length > 0 ? this.generatePatentsSection(resume) : ''}
+    
+    ${resume.certifications && resume.certifications.length > 0 ? this.generateCertificationsSection(resume) : ''}
+    
+    ${resume.awards && resume.awards.length > 0 ? this.generateAwardsSection(resume) : ''}
+    
+    ${resume.volunteer && resume.volunteer.length > 0 ? this.generateVolunteerSection(resume) : ''}
     
     ${this.generateSkillsSection(resume)}
 </body>
@@ -238,6 +265,130 @@ export class HTMLResumeTemplate {
     <div class="section">
         <div class="section-header">Skills</div>
         ${resume.skills.map((skill) => `<div style="margin-bottom: 3px;">${skill}</div>`).join('\n        ')}
+    </div>
+    `;
+  }
+
+  private static generatePublicationsSection(resume: Resume): string {
+    if (!resume.publications) return '';
+    
+    return `
+    <div class="section">
+        <div class="section-header">Publications</div>
+        ${resume.publications
+          .map(
+            (pub) => `
+        <div class="entry">
+            <div style="margin-bottom: 2px;">
+                ${pub.authors} "${pub.title}," <em>${pub.venue}</em>, ${pub.date}.
+            </div>
+            ${pub.doi ? `<div style="font-size: 10pt; margin-left: 10px;">DOI: ${pub.doi}</div>` : ''}
+            ${pub.link ? `<div style="font-size: 10pt; margin-left: 10px;">Link: ${pub.link}</div>` : ''}
+        </div>
+        `
+          )
+          .join('')}
+    </div>
+    `;
+  }
+
+  private static generatePatentsSection(resume: Resume): string {
+    if (!resume.patents) return '';
+    
+    return `
+    <div class="section">
+        <div class="section-header">Patents</div>
+        ${resume.patents
+          .map(
+            (patent) => `
+        <div class="entry">
+            <div class="entry-header">
+                <span>${patent.title}</span>
+                <span>${patent.patentNumber} | ${patent.status}</span>
+            </div>
+            <div style="margin-left: 10px; font-size: 10pt;">Filed/Granted: ${patent.date}</div>
+            ${patent.inventors ? `<div style="margin-left: 10px; font-size: 10pt;">Inventors: ${patent.inventors}</div>` : ''}
+        </div>
+        `
+          )
+          .join('')}
+    </div>
+    `;
+  }
+
+  private static generateCertificationsSection(resume: Resume): string {
+    if (!resume.certifications) return '';
+    
+    return `
+    <div class="section">
+        <div class="section-header">Certifications</div>
+        ${resume.certifications
+          .map(
+            (cert) => `
+        <div class="entry">
+            <div class="entry-header">
+                <span>${cert.name} - ${cert.issuer}</span>
+                <span>${cert.date}</span>
+            </div>
+            ${cert.expiryDate ? `<div style="margin-left: 10px; font-size: 10pt;">Expires: ${cert.expiryDate}</div>` : ''}
+            ${cert.credentialId ? `<div style="margin-left: 10px; font-size: 10pt;">Credential ID: ${cert.credentialId}</div>` : ''}
+            ${cert.link ? `<div style="margin-left: 10px; font-size: 10pt;">Verify: ${cert.link}</div>` : ''}
+        </div>
+        `
+          )
+          .join('')}
+    </div>
+    `;
+  }
+
+  private static generateAwardsSection(resume: Resume): string {
+    if (!resume.awards) return '';
+    
+    return `
+    <div class="section">
+        <div class="section-header">Awards & Honors</div>
+        ${resume.awards
+          .map(
+            (award) => `
+        <div class="entry">
+            <div class="entry-header">
+                <span>${award.title} - ${award.issuer}</span>
+                <span>${award.date}</span>
+            </div>
+            ${award.description ? `<div style="margin-left: 10px;">${award.description}</div>` : ''}
+        </div>
+        `
+          )
+          .join('')}
+    </div>
+    `;
+  }
+
+  private static generateVolunteerSection(resume: Resume): string {
+    if (!resume.volunteer) return '';
+    
+    return `
+    <div class="section">
+        <div class="section-header">Volunteer Experience</div>
+        ${resume.volunteer
+          .map(
+            (vol) => `
+        <div class="entry">
+            <div class="entry-header">
+                <span>${vol.organization} | ${vol.role}</span>
+                <span>${vol.startDate}${vol.endDate ? ` – ${vol.endDate}` : ''}</span>
+            </div>
+            ${
+              vol.bullets && vol.bullets.length > 0
+                ? `<ul class="bullets">
+                ${vol.bullets.map((bullet) => (bullet.trim() ? `<li>${bullet.trim()}</li>` : '')).join('\n                ')}
+            </ul>`
+                : ''
+            }
+        </div>
+        `
+          )
+          .join('')}
     </div>
     `;
   }

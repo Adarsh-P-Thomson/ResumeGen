@@ -38,6 +38,36 @@ export class HarvardFormatter {
       sections.push('');
     }
     
+    // Publications (if any)
+    if (resume.publications && resume.publications.length > 0) {
+      sections.push(this.formatPublicationsSection(resume.publications));
+      sections.push('');
+    }
+    
+    // Patents (if any)
+    if (resume.patents && resume.patents.length > 0) {
+      sections.push(this.formatPatentsSection(resume.patents));
+      sections.push('');
+    }
+    
+    // Certifications (if any)
+    if (resume.certifications && resume.certifications.length > 0) {
+      sections.push(this.formatCertificationsSection(resume.certifications));
+      sections.push('');
+    }
+    
+    // Awards (if any)
+    if (resume.awards && resume.awards.length > 0) {
+      sections.push(this.formatAwardsSection(resume.awards));
+      sections.push('');
+    }
+    
+    // Volunteer (if any)
+    if (resume.volunteer && resume.volunteer.length > 0) {
+      sections.push(this.formatVolunteerSection(resume.volunteer));
+      sections.push('');
+    }
+    
     // Skills
     sections.push(this.formatSkillsSection(resume.skills));
     
@@ -191,6 +221,162 @@ export class HarvardFormatter {
     
     skills.forEach(skill => {
       lines.push(skill);
+    });
+    
+    return lines.join('\n');
+  }
+  
+  /**
+   * Format publications section
+   */
+  private static formatPublicationsSection(publications: Resume['publications']): string {
+    if (!publications) return '';
+    
+    const lines: string[] = [];
+    lines.push(this.sectionHeader('PUBLICATIONS'));
+    lines.push(this.separator());
+    
+    publications.forEach((pub, index) => {
+      // Authors, "Title," Venue, Date.
+      const authorsPart = pub.authors;
+      const titlePart = `"${pub.title},"`;
+      const venuePart = pub.venue;
+      const datePart = pub.date;
+      
+      lines.push(`${authorsPart} ${titlePart} ${venuePart}, ${datePart}.`);
+      
+      // Optional DOI
+      if (pub.doi) {
+        lines.push(`  DOI: ${pub.doi}`);
+      }
+      
+      // Optional link
+      if (pub.link) {
+        lines.push(`  Link: ${pub.link}`);
+      }
+      
+      if (index < publications.length - 1) {
+        lines.push('');
+      }
+    });
+    
+    return lines.join('\n');
+  }
+  
+  /**
+   * Format patents section
+   */
+  private static formatPatentsSection(patents: Resume['patents']): string {
+    if (!patents) return '';
+    
+    const lines: string[] = [];
+    lines.push(this.sectionHeader('PATENTS'));
+    lines.push(this.separator());
+    
+    patents.forEach((patent, index) => {
+      // Patent Title | Patent Number | Status
+      lines.push(this.twoColumnLine(patent.title, `${patent.patentNumber} | ${patent.status}`));
+      lines.push(`  Filed/Granted: ${patent.date}`);
+      
+      if (patent.inventors) {
+        lines.push(`  Inventors: ${patent.inventors}`);
+      }
+      
+      if (index < patents.length - 1) {
+        lines.push('');
+      }
+    });
+    
+    return lines.join('\n');
+  }
+  
+  /**
+   * Format certifications section
+   */
+  private static formatCertificationsSection(certifications: Resume['certifications']): string {
+    if (!certifications) return '';
+    
+    const lines: string[] = [];
+    lines.push(this.sectionHeader('CERTIFICATIONS'));
+    lines.push(this.separator());
+    
+    certifications.forEach((cert, index) => {
+      // Certification Name | Issuer
+      lines.push(this.twoColumnLine(`${cert.name} - ${cert.issuer}`, cert.date));
+      
+      if (cert.expiryDate) {
+        lines.push(`  Expires: ${cert.expiryDate}`);
+      }
+      
+      if (cert.credentialId) {
+        lines.push(`  Credential ID: ${cert.credentialId}`);
+      }
+      
+      if (cert.link) {
+        lines.push(`  Verify: ${cert.link}`);
+      }
+      
+      if (index < certifications.length - 1) {
+        lines.push('');
+      }
+    });
+    
+    return lines.join('\n');
+  }
+  
+  /**
+   * Format awards section
+   */
+  private static formatAwardsSection(awards: Resume['awards']): string {
+    if (!awards) return '';
+    
+    const lines: string[] = [];
+    lines.push(this.sectionHeader('AWARDS & HONORS'));
+    lines.push(this.separator());
+    
+    awards.forEach((award, index) => {
+      // Award Title | Issuer | Date
+      lines.push(this.twoColumnLine(`${award.title} - ${award.issuer}`, award.date));
+      
+      if (award.description) {
+        lines.push(`  ${award.description}`);
+      }
+      
+      if (index < awards.length - 1) {
+        lines.push('');
+      }
+    });
+    
+    return lines.join('\n');
+  }
+  
+  /**
+   * Format volunteer section
+   */
+  private static formatVolunteerSection(volunteer: Resume['volunteer']): string {
+    if (!volunteer) return '';
+    
+    const lines: string[] = [];
+    lines.push(this.sectionHeader('VOLUNTEER EXPERIENCE'));
+    lines.push(this.separator());
+    
+    volunteer.forEach((vol, index) => {
+      // Organization | Role | Dates
+      const dateRange = vol.endDate ? `${vol.startDate} – ${vol.endDate}` : vol.startDate;
+      lines.push(this.twoColumnLine(`${vol.organization} | ${vol.role}`, dateRange));
+      
+      // Bullets
+      if (vol.bullets && vol.bullets.length > 0) {
+        vol.bullets.forEach(bullet => {
+          if (bullet.trim()) {
+            lines.push(`  • ${bullet.trim()}`);
+          }
+        });
+      }
+      
+      if (index < volunteer.length - 1) {
+        lines.push('');
+      }
     });
     
     return lines.join('\n');

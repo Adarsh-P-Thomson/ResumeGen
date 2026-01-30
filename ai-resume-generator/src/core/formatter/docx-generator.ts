@@ -69,6 +69,51 @@ export class DOCXGenerator {
                 ]
               : []),
 
+            // Publications (if any)
+            ...(resume.publications && resume.publications.length > 0
+              ? [
+                  ...this.createSectionHeader('PUBLICATIONS'),
+                  ...this.createPublicationsSection(resume.publications),
+                  ...this.createSpacing(1),
+                ]
+              : []),
+
+            // Patents (if any)
+            ...(resume.patents && resume.patents.length > 0
+              ? [
+                  ...this.createSectionHeader('PATENTS'),
+                  ...this.createPatentsSection(resume.patents),
+                  ...this.createSpacing(1),
+                ]
+              : []),
+
+            // Certifications (if any)
+            ...(resume.certifications && resume.certifications.length > 0
+              ? [
+                  ...this.createSectionHeader('CERTIFICATIONS'),
+                  ...this.createCertificationsSection(resume.certifications),
+                  ...this.createSpacing(1),
+                ]
+              : []),
+
+            // Awards (if any)
+            ...(resume.awards && resume.awards.length > 0
+              ? [
+                  ...this.createSectionHeader('AWARDS & HONORS'),
+                  ...this.createAwardsSection(resume.awards),
+                  ...this.createSpacing(1),
+                ]
+              : []),
+
+            // Volunteer (if any)
+            ...(resume.volunteer && resume.volunteer.length > 0
+              ? [
+                  ...this.createSectionHeader('VOLUNTEER EXPERIENCE'),
+                  ...this.createVolunteerSection(resume.volunteer),
+                  ...this.createSpacing(1),
+                ]
+              : []),
+
             // Skills
             ...this.createSectionHeader('SKILLS'),
             ...this.createSkillsSection(resume.skills),
@@ -408,6 +453,289 @@ export class DOCXGenerator {
           ],
         })
     );
+  }
+
+  /**
+   * Create publications section
+   */
+  private static createPublicationsSection(publications: Resume['publications']): Paragraph[] {
+    if (!publications) return [];
+    
+    const paragraphs: Paragraph[] = [];
+    
+    publications.forEach((pub, index) => {
+      // Citation line
+      paragraphs.push(
+        new Paragraph({
+          children: [
+            new TextRun({
+              text: `${pub.authors} "${pub.title}," ${pub.venue}, ${pub.date}.`,
+            }),
+          ],
+        })
+      );
+      
+      // DOI
+      if (pub.doi) {
+        paragraphs.push(
+          new Paragraph({
+            children: [
+              new TextRun({
+                text: `  DOI: ${pub.doi}`,
+                size: 20,
+              }),
+            ],
+          })
+        );
+      }
+      
+      // Link
+      if (pub.link) {
+        paragraphs.push(
+          new Paragraph({
+            children: [
+              new TextRun({
+                text: `  Link: ${pub.link}`,
+                size: 20,
+              }),
+            ],
+          })
+        );
+      }
+      
+      if (index < publications.length - 1) {
+        paragraphs.push(...this.createSpacing(1));
+      }
+    });
+    
+    return paragraphs;
+  }
+
+  /**
+   * Create patents section
+   */
+  private static createPatentsSection(patents: Resume['patents']): Paragraph[] {
+    if (!patents) return [];
+    
+    const paragraphs: Paragraph[] = [];
+    
+    patents.forEach((patent, index) => {
+      // Title and number
+      paragraphs.push(
+        new Paragraph({
+          children: [
+            new TextRun({
+              text: patent.title,
+              bold: true,
+            }),
+            new TextRun({
+              text: ` | ${patent.patentNumber} | ${patent.status}`,
+            }),
+          ],
+        })
+      );
+      
+      // Date
+      paragraphs.push(
+        new Paragraph({
+          children: [
+            new TextRun({
+              text: `  Filed/Granted: ${patent.date}`,
+              size: 20,
+            }),
+          ],
+        })
+      );
+      
+      // Inventors
+      if (patent.inventors) {
+        paragraphs.push(
+          new Paragraph({
+            children: [
+              new TextRun({
+                text: `  Inventors: ${patent.inventors}`,
+                size: 20,
+              }),
+            ],
+          })
+        );
+      }
+      
+      if (index < patents.length - 1) {
+        paragraphs.push(...this.createSpacing(1));
+      }
+    });
+    
+    return paragraphs;
+  }
+
+  /**
+   * Create certifications section
+   */
+  private static createCertificationsSection(certifications: Resume['certifications']): Paragraph[] {
+    if (!certifications) return [];
+    
+    const paragraphs: Paragraph[] = [];
+    
+    certifications.forEach((cert, index) => {
+      // Name and issuer
+      paragraphs.push(
+        new Paragraph({
+          children: [
+            new TextRun({
+              text: `${cert.name} - ${cert.issuer}`,
+              bold: true,
+            }),
+            new TextRun({
+              text: ` | ${cert.date}`,
+            }),
+          ],
+        })
+      );
+      
+      // Expiry
+      if (cert.expiryDate) {
+        paragraphs.push(
+          new Paragraph({
+            children: [
+              new TextRun({
+                text: `  Expires: ${cert.expiryDate}`,
+                size: 20,
+              }),
+            ],
+          })
+        );
+      }
+      
+      // Credential ID
+      if (cert.credentialId) {
+        paragraphs.push(
+          new Paragraph({
+            children: [
+              new TextRun({
+                text: `  Credential ID: ${cert.credentialId}`,
+                size: 20,
+              }),
+            ],
+          })
+        );
+      }
+      
+      // Link
+      if (cert.link) {
+        paragraphs.push(
+          new Paragraph({
+            children: [
+              new TextRun({
+                text: `  Verify: ${cert.link}`,
+                size: 20,
+              }),
+            ],
+          })
+        );
+      }
+      
+      if (index < certifications.length - 1) {
+        paragraphs.push(...this.createSpacing(1));
+      }
+    });
+    
+    return paragraphs;
+  }
+
+  /**
+   * Create awards section
+   */
+  private static createAwardsSection(awards: Resume['awards']): Paragraph[] {
+    if (!awards) return [];
+    
+    const paragraphs: Paragraph[] = [];
+    
+    awards.forEach((award, index) => {
+      // Title and issuer
+      paragraphs.push(
+        new Paragraph({
+          children: [
+            new TextRun({
+              text: `${award.title} - ${award.issuer}`,
+              bold: true,
+            }),
+            new TextRun({
+              text: ` | ${award.date}`,
+            }),
+          ],
+        })
+      );
+      
+      // Description
+      if (award.description) {
+        paragraphs.push(
+          new Paragraph({
+            children: [
+              new TextRun({
+                text: `  ${award.description}`,
+              }),
+            ],
+          })
+        );
+      }
+      
+      if (index < awards.length - 1) {
+        paragraphs.push(...this.createSpacing(1));
+      }
+    });
+    
+    return paragraphs;
+  }
+
+  /**
+   * Create volunteer section
+   */
+  private static createVolunteerSection(volunteer: Resume['volunteer']): Paragraph[] {
+    if (!volunteer) return [];
+    
+    const paragraphs: Paragraph[] = [];
+    
+    volunteer.forEach((vol, index) => {
+      // Organization and role
+      const dateRange = vol.endDate ? `${vol.startDate} – ${vol.endDate}` : vol.startDate;
+      paragraphs.push(
+        new Paragraph({
+          children: [
+            new TextRun({
+              text: `${vol.organization} | ${vol.role}`,
+              bold: true,
+            }),
+            new TextRun({
+              text: ` | ${dateRange}`,
+            }),
+          ],
+        })
+      );
+      
+      // Bullets
+      if (vol.bullets && vol.bullets.length > 0) {
+        vol.bullets.forEach((bullet) => {
+          if (bullet.trim()) {
+            paragraphs.push(
+              new Paragraph({
+                children: [
+                  new TextRun({
+                    text: `  • ${bullet.trim()}`,
+                  }),
+                ],
+              })
+            );
+          }
+        });
+      }
+      
+      if (index < volunteer.length - 1) {
+        paragraphs.push(...this.createSpacing(1));
+      }
+    });
+    
+    return paragraphs;
   }
 
   /**

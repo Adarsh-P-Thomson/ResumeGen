@@ -45,6 +45,8 @@ export class PDFGenerator {
         path: outputPath,
         format: 'Letter',
         printBackground: true,
+        preferCSSPageSize: true,
+        displayHeaderFooter: false,
         margin: {
           top: '0.5in',
           right: '0.75in',

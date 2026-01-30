@@ -6,10 +6,14 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:formatter": "tsx src/core/formatter/process-resume.ts",
+    "test:all-formats": "tsx src/core/resume/test-all-formats.ts"
   },
   "dependencies": {
+    "docx": "^9.5.1",
     "next": "16.1.1",
+    "puppeteer": "^24.36.1",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },
@@ -21,6 +25,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.1.1",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }

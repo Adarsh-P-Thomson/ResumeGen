@@ -19,3 +19,23 @@ export interface Experience {
   endDate?: string;
   bullets: string[];
 }
+
+export interface Education {
+  institution: string;
+  degree: string;
+  field?: string;
+  graduationDate: string;
+  gpa?: string;
+  location?: string;
+  bullets?: string[];
+}
+
+export interface Project {
+  name: string;
+  description?: string;
+  technologies?: string[];
+  startDate?: string;
+  endDate?: string;
+  bullets: string[];
+  links?: string[];
+}

@@ -1,0 +1,83 @@
+{
+  "personal": {
+    "name": "Alex Johnson",
+    "email": "alex.johnson@email.com",
+    "phone": "+1 (555) 123-4567",
+    "location": "San Francisco, CA",
+    "links": [
+      "linkedin.com/in/alexjohnson",
+      "github.com/alexjohnson",
+      "alexjohnson.dev"
+    ]
+  },
+  "education": [
+    {
+      "institution": "Stanford University",
+      "degree": "Bachelor of Science",
+      "field": "Computer Science",
+      "graduationDate": "May 2022",
+      "gpa": "3.85/4.0",
+      "location": "Stanford, CA",
+      "bullets": [
+        "Relevant Coursework: Machine Learning, Data Structures, Algorithms, Distributed Systems"
+      ]
+    }
+  ],
+  "experience": [
+    {
+      "company": "TechCorp Inc.",
+      "role": "Senior Software Engineer",
+      "startDate": "June 2023",
+      "endDate": "Present",
+      "bullets": [
+        "Architected and deployed microservices infrastructure serving 2M+ daily active users, reducing latency by 40%",
+        "Led team of 5 engineers to deliver cloud-native payment processing system handling $10M+ monthly transactions",
+        "Optimized database queries and implemented Redis caching, improving API response time from 800ms to 120ms",
+        "Mentored 3 junior engineers and established code review standards, reducing production bugs by 65%"
+      ]
+    },
+    {
+      "company": "StartupXYZ",
+      "role": "Full Stack Developer",
+      "startDate": "July 2022",
+      "endDate": "May 2023",
+      "bullets": [
+        "Developed React-based dashboard for real-time analytics, increasing user engagement by 35%",
+        "Built RESTful APIs using Node.js and Express, processing 100K+ requests daily with 99.9% uptime",
+        "Implemented CI/CD pipeline using GitHub Actions, reducing deployment time from 2 hours to 15 minutes",
+        "Collaborated with product team to ship 12 features across 6 sprints, meeting all deadlines"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "AI Code Review Assistant",
+      "technologies": ["Python", "OpenAI API", "FastAPI", "Docker"],
+      "startDate": "Jan 2024",
+      "endDate": "Present",
+      "bullets": [
+        "Built automated code review tool using GPT-4 API, analyzing 500+ pull requests with 85% accuracy rate",
+        "Deployed containerized application on AWS ECS, processing reviews for 50+ developers across 3 teams",
+        "Reduced average PR review time from 4 hours to 30 minutes, accelerating development velocity by 70%"
+      ],
+      "links": ["github.com/alexjohnson/ai-code-reviewer"]
+    },
+    {
+      "name": "Real-Time Collaboration Platform",
+      "technologies": ["React", "WebSocket", "MongoDB", "Redis"],
+      "bullets": [
+        "Developed collaborative document editing platform with real-time synchronization using WebSockets",
+        "Implemented operational transformation algorithm to resolve concurrent edits from 10+ simultaneous users",
+        "Achieved sub-100ms synchronization latency with 99.8% message delivery rate across distributed clients"
+      ]
+    }
+  ],
+  "skills": [
+    "Languages: JavaScript, TypeScript, Python, Java, Go, SQL",
+    "Frontend: React, Next.js, Vue.js, HTML/CSS, Tailwind",
+    "Backend: Node.js, Express, FastAPI, Django, GraphQL, REST APIs",
+    "Databases: PostgreSQL, MongoDB, Redis, MySQL",
+    "Cloud & DevOps: AWS, Docker, Kubernetes, CI/CD, GitHub Actions",
+    "Tools: Git, Jest, Pytest, Linux, Agile/Scrum"
+  ]
+}

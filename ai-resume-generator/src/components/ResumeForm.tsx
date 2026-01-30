@@ -68,6 +68,11 @@ export default function ResumeForm() {
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState('');
   const [error, setError] = useState('');
+  
+  // AI Refinement state
+  const [jobDescription, setJobDescription] = useState('');
+  const [useAI, setUseAI] = useState(false);
+  const [refining, setRefining] = useState(false);
 
   // Toggle optional section
   const toggleSection = (section: keyof OptionalSections) => {
@@ -200,12 +205,43 @@ export default function ResumeForm() {
         .filter(s => s.trim())
         .map(s => s.trim());
 
-      const resumeData: Resume = {
+      let resumeData: Resume = {
         ...formData,
         skills: skillsArray,
         projects: formData.projects?.filter(p => p.name.trim()) || undefined,
       };
 
+      // Step 1: Refine with AI if enabled
+      if (useAI && jobDescription.trim()) {
+        setRefining(true);
+        try {
+          const refineResponse = await fetch('/api/refine', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              resumeData,
+              jobDescription: jobDescription.trim(),
+            }),
+          });
+
+          if (!refineResponse.ok) {
+            const refineError = await refineResponse.json();
+            throw new Error(refineError.error || 'AI refinement failed');
+          }
+
+          const refineResult = await refineResponse.json();
+          resumeData = refineResult.refinedData;
+          console.log('Resume refined with AI successfully');
+        } catch (aiError) {
+          console.error('AI refinement error:', aiError);
+          setError(`AI Refinement Warning: ${aiError instanceof Error ? aiError.message : 'Failed to refine'}. Proceeding with original data.`);
+          // Continue with original data
+        } finally {
+          setRefining(false);
+        }
+      }
+
+      // Step 2: Generate resume in selected format
       const response = await fetch('/api/resume', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -233,7 +269,7 @@ export default function ResumeForm() {
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
         
-        setPreview(`✓ Resume downloaded as ${format.toUpperCase()}`);
+        setPreview(`✓ Resume ${useAI && jobDescription.trim() ? 'refined with AI and ' : ''}downloaded as ${format.toUpperCase()}`);
       } else {
         // Show preview
         const result = await response.json();
@@ -243,6 +279,7 @@ export default function ResumeForm() {
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
       setLoading(false);
+      setRefining(false);
     }
   };
 
@@ -1402,6 +1439,62 @@ export default function ResumeForm() {
         </div>
       </section>
 
+      {/* AI Refinement Section */}
+      <section className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border-2 border-indigo-300 p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900 mb-1">🤖 AI-Powered Refinement</h2>
+            <p className="text-sm text-gray-600">Optimize your resume for a specific job description using AI</p>
+          </div>
+          <button
+            onClick={() => setUseAI(!useAI)}
+            className={`px-4 py-2 rounded-lg font-medium transition-all ${
+              useAI
+                ? 'bg-indigo-600 text-white shadow-md'
+                : 'bg-white text-gray-700 border-2 border-gray-300 hover:border-indigo-400'
+            }`}
+          >
+            {useAI ? '✓ AI Enabled' : 'Enable AI'}
+          </button>
+        </div>
+
+        {useAI && (
+          <div className="space-y-3 animate-fadeIn">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Job Description *
+              </label>
+              <textarea
+                value={jobDescription}
+                onChange={(e) => setJobDescription(e.target.value)}
+                rows={8}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-mono text-sm"
+                placeholder="Paste the job description here...&#10;&#10;Example:&#10;We are seeking a Senior Software Engineer with 5+ years of experience in full-stack development. The ideal candidate will have expertise in React, Node.js, and cloud platforms (AWS/GCP). You will lead the development of scalable web applications and mentor junior developers.&#10;&#10;Requirements:&#10;- 5+ years of software development experience&#10;- Strong proficiency in JavaScript/TypeScript&#10;- Experience with React, Node.js, and SQL databases&#10;- Cloud platform experience (AWS preferred)&#10;- Excellent problem-solving and communication skills"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                💡 The AI will rewrite your bullet points to match this job description while keeping facts accurate
+              </p>
+            </div>
+            
+            {refining && (
+              <div className="flex items-center gap-2 p-3 bg-indigo-100 rounded-md">
+                <div className="animate-spin rounded-full h-4 w-4 border-2 border-indigo-600 border-t-transparent"></div>
+                <span className="text-sm text-indigo-700 font-medium">Refining resume with AI...</span>
+              </div>
+            )}
+          </div>
+        )}
+
+        {!useAI && (
+          <div className="p-4 bg-white rounded-lg border border-gray-200">
+            <p className="text-sm text-gray-600">
+              ✨ <strong>Pro Tip:</strong> Enable AI refinement to automatically optimize your resume content for specific job postings. 
+              The AI will rewrite your experience bullets and project descriptions to highlight relevant skills while maintaining factual accuracy.
+            </p>
+          </div>
+        )}
+      </section>
+
       {/* Format Selection & Generate */}
       <section className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h2 className="text-xl font-semibold text-gray-900 mb-4">Generate Resume</h2>
@@ -1435,10 +1528,15 @@ export default function ResumeForm() {
 
           <button
             onClick={generateResume}
-            disabled={loading}
+            disabled={loading || refining}
             className="w-full px-6 py-3 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
           >
-            {loading ? 'Generating Resume...' : `Generate ${format.toUpperCase()} Resume`}
+            {refining 
+              ? '🤖 Refining with AI...' 
+              : loading 
+                ? 'Generating Resume...' 
+                : `Generate ${format.toUpperCase()} Resume${useAI && jobDescription.trim() ? ' (AI-Optimized)' : ''}`
+            }
           </button>
 
           {error && (

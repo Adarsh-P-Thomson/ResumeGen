@@ -73,6 +73,7 @@ export default function ResumeForm() {
   const [jobDescription, setJobDescription] = useState('');
   const [useAI, setUseAI] = useState(false);
   const [refining, setRefining] = useState(false);
+  const [aiModel, setAiModel] = useState(process.env.NEXT_PUBLIC_MEGALLM_MODEL || 'deepseek-r1-distill-llama-70b');
 
   // Toggle optional section
   const toggleSection = (section: keyof OptionalSections) => {
@@ -221,6 +222,7 @@ export default function ResumeForm() {
             body: JSON.stringify({
               resumeData,
               jobDescription: jobDescription.trim(),
+              model: aiModel,
             }),
           });
 
@@ -283,8 +285,104 @@ export default function ResumeForm() {
     }
   };
 
+  // Export resume data as JSON
+  const exportResumeData = () => {
+    const skillsArray = formData.skills
+      .split('\n')
+      .filter(s => s.trim())
+      .map(s => s.trim());
+
+    const resumeData: Resume = {
+      ...formData,
+      skills: skillsArray,
+      projects: formData.projects?.filter(p => p.name.trim()) || undefined,
+    };
+
+    const dataStr = JSON.stringify(resumeData, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `resume-data-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  };
+
+  // Import resume data from JSON
+  const importResumeData = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const json = JSON.parse(e.target?.result as string);
+        
+        // Convert skills array to string
+        const skillsString = Array.isArray(json.skills) ? json.skills.join('\n') : '';
+        
+        setFormData({
+          ...json,
+          skills: skillsString,
+        });
+
+        // Enable optional sections if they have data
+        if (json.publications?.length > 0) {
+          setOptionalSections(prev => ({ ...prev, publications: true }));
+        }
+        if (json.patents?.length > 0) {
+          setOptionalSections(prev => ({ ...prev, patents: true }));
+        }
+        if (json.certifications?.length > 0) {
+          setOptionalSections(prev => ({ ...prev, certifications: true }));
+        }
+        if (json.awards?.length > 0) {
+          setOptionalSections(prev => ({ ...prev, awards: true }));
+        }
+        if (json.volunteer?.length > 0) {
+          setOptionalSections(prev => ({ ...prev, volunteer: true }));
+        }
+
+        setError('');
+        setPreview('✓ Resume data imported successfully!');
+        setTimeout(() => setPreview(''), 3000);
+      } catch (err) {
+        setError('Failed to import JSON file. Please check the file format.');
+      }
+    };
+    reader.readAsText(file);
+    
+    // Reset file input
+    event.target.value = '';
+  };
+
   return (
     <div className="space-y-8">
+      {/* Import/Export Section */}
+      <section className="bg-gradient-to-r from-green-50 to-teal-50 rounded-lg border-2 border-green-300 p-6">
+        <h2 className="text-xl font-semibold text-gray-900 mb-3">💾 Save/Load Resume Data</h2>
+        <p className="text-sm text-gray-600 mb-4">Export your resume as JSON to save your work, or import a previously saved file</p>
+        <div className="flex flex-wrap gap-3">
+          <button
+            onClick={exportResumeData}
+            className="px-4 py-2 bg-green-600 text-white rounded-md font-medium hover:bg-green-700 transition-colors flex items-center gap-2"
+          >
+            <span>📥</span> Export Resume JSON
+          </button>
+          <label className="px-4 py-2 bg-teal-600 text-white rounded-md font-medium hover:bg-teal-700 transition-colors cursor-pointer flex items-center gap-2">
+            <span>📤</span> Import Resume JSON
+            <input
+              type="file"
+              accept=".json"
+              onChange={importResumeData}
+              className="hidden"
+            />
+          </label>
+        </div>
+      </section>
+
       {/* Personal Information */}
       <section className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h2 className="text-xl font-semibold text-gray-900 mb-4">Personal Information</h2>
@@ -300,7 +398,7 @@ export default function ResumeForm() {
                 ...formData,
                 personal: { ...formData.personal, name: e.target.value }
               })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-400"
               placeholder="John Doe"
             />
           </div>
@@ -1462,6 +1560,29 @@ export default function ResumeForm() {
           <div className="space-y-3 animate-fadeIn">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
+                AI Model *
+              </label>
+              <select
+                value={aiModel}
+                onChange={(e) => setAiModel(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
+              >
+                <option value="deepseek-r1-distill-llama-70b">DeepSeek R1 Distill LLaMA 70B ⭐ Recommended</option>
+                <option value="gpt-oss">GPT-OSS (20B)</option>
+                <option value="mistral-large">Mistral Large</option>
+                <option value="llama">LLaMA</option>
+                <option value="qwen">Qwen</option>
+                <option value="kimi">Kimi</option>
+                <option value="k2">K2</option>
+                <option value="minimax">MiniMax M2</option>
+              </select>
+              <p className="text-xs text-gray-500 mt-1">
+                💡 DeepSeek R1 Distill is recommended for best resume refinement quality
+              </p>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Job Description *
               </label>
               <textarea
@@ -1479,7 +1600,7 @@ export default function ResumeForm() {
             {refining && (
               <div className="flex items-center gap-2 p-3 bg-indigo-100 rounded-md">
                 <div className="animate-spin rounded-full h-4 w-4 border-2 border-indigo-600 border-t-transparent"></div>
-                <span className="text-sm text-indigo-700 font-medium">Refining resume with AI...</span>
+                <span className="text-sm text-indigo-700 font-medium">Refining resume with AI using {aiModel}...</span>
               </div>
             )}
           </div>

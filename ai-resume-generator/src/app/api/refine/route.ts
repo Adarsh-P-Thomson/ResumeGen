@@ -9,7 +9,7 @@ import { Resume } from '@/core/schemas/resume.schema';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { resumeData, jobDescription } = body;
+    const { resumeData, jobDescription, model } = body;
 
     // Validate input
     if (!resumeData) {
@@ -26,11 +26,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Initialize AI client
-    const aiClient = new MegallmClient();
+    // Initialize AI client with selected model
+    const aiClient = new MegallmClient(
+      process.env.MEGALLM_API_KEY,
+      process.env.MEGALLM_API_URL,
+      model || process.env.MEGALLM_MODEL || 'gpt-oss'
+    );
 
     // Refine resume data
-    console.log('Refining resume with AI...');
+    console.log(`Refining resume with AI using model: ${model || 'default'}...`);
     const refinedData = await aiClient.refineResume(resumeData, jobDescription);
 
     console.log('Resume refined successfully');

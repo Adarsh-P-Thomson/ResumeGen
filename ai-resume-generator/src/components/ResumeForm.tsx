@@ -359,37 +359,61 @@ export default function ResumeForm() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Import/Export Section */}
-      <section className="bg-gradient-to-r from-green-50 to-teal-50 rounded-lg border-2 border-green-300 p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-3">💾 Save/Load Resume Data</h2>
-        <p className="text-sm text-gray-600 mb-4">Export your resume as JSON to save your work, or import a previously saved file</p>
-        <div className="flex flex-wrap gap-3">
-          <button
-            onClick={exportResumeData}
-            className="px-4 py-2 bg-green-600 text-white rounded-md font-medium hover:bg-green-700 transition-colors flex items-center gap-2"
-          >
-            <span>📥</span> Export Resume JSON
-          </button>
-          <label className="px-4 py-2 bg-teal-600 text-white rounded-md font-medium hover:bg-teal-700 transition-colors cursor-pointer flex items-center gap-2">
-            <span>📤</span> Import Resume JSON
-            <input
-              type="file"
-              accept=".json"
-              onChange={importResumeData}
-              className="hidden"
-            />
-          </label>
+      <section className="bg-gradient-to-r from-emerald-50 via-teal-50 to-cyan-50 rounded-2xl border border-emerald-200/50 p-6 shadow-sm">
+        <div className="flex items-start">
+          <div className="flex-shrink-0">
+            <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-200">
+              <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+              </svg>
+            </div>
+          </div>
+          <div className="ml-4 flex-1">
+            <h2 className="text-lg font-bold text-gray-900 mb-2">💾 Save/Load Resume Data</h2>
+            <p className="text-sm text-gray-600 mb-4 leading-relaxed">Export your resume as JSON to save your work, or import a previously saved file</p>
+            <div className="flex flex-wrap gap-3">
+              <button
+                onClick={exportResumeData}
+                className="px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl font-semibold hover:from-emerald-700 hover:to-teal-700 transition-all shadow-md hover:shadow-lg flex items-center gap-2 btn-hover-lift"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                Export JSON
+              </button>
+              <label className="px-5 py-2.5 bg-gradient-to-r from-teal-600 to-cyan-600 text-white rounded-xl font-semibold hover:from-teal-700 hover:to-cyan-700 transition-all shadow-md hover:shadow-lg cursor-pointer flex items-center gap-2 btn-hover-lift">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                </svg>
+                Import JSON
+                <input
+                  type="file"
+                  accept=".json"
+                  onChange={importResumeData}
+                  className="hidden"
+                />
+              </label>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* Personal Information */}
-      <section className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">Personal Information</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <section className="bg-white rounded-2xl shadow-md border border-gray-200/50 p-8 hover:shadow-lg transition-shadow">
+        <div className="flex items-center mb-6">
+          <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center mr-3">
+            <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900">Personal Information</h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Full Name *
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Full Name <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -398,13 +422,13 @@ export default function ResumeForm() {
                 ...formData,
                 personal: { ...formData.personal, name: e.target.value }
               })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-400"
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900 placeholder-gray-400 transition-all hover:border-gray-300"
               placeholder="John Doe"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email *
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Email <span className="text-red-500">*</span>
             </label>
             <input
               type="email"
@@ -413,12 +437,12 @@ export default function ResumeForm() {
                 ...formData,
                 personal: { ...formData.personal, email: e.target.value }
               })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900 placeholder-gray-400 transition-all hover:border-gray-300"
               placeholder="john@example.com"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
               Phone
             </label>
             <input
@@ -428,12 +452,12 @@ export default function ResumeForm() {
                 ...formData,
                 personal: { ...formData.personal, phone: e.target.value }
               })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900 placeholder-gray-400 transition-all hover:border-gray-300"
               placeholder="+1 (555) 123-4567"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
               Location
             </label>
             <input
@@ -443,12 +467,12 @@ export default function ResumeForm() {
                 ...formData,
                 personal: { ...formData.personal, location: e.target.value }
               })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900 placeholder-gray-400 transition-all hover:border-gray-300"
               placeholder="New York, NY"
             />
           </div>
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
               Links (one per line)
             </label>
             <textarea
@@ -461,7 +485,7 @@ export default function ResumeForm() {
                 }
               })}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900 placeholder-gray-400 transition-all hover:border-gray-300 font-mono text-sm"
               placeholder="linkedin.com/in/johndoe&#10;github.com/johndoe&#10;portfolio.com"
             />
           </div>
@@ -469,33 +493,52 @@ export default function ResumeForm() {
       </section>
 
       {/* Education */}
-      <section className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-gray-900">Education</h2>
+      <section className="bg-white rounded-2xl shadow-md border border-gray-200/50 p-8 hover:shadow-lg transition-shadow">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl flex items-center justify-center mr-3">
+              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+              </svg>
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900">Education</h2>
+          </div>
           <button
             onClick={addEducation}
-            className="px-3 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            className="px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-cyan-700 transition-all shadow-md hover:shadow-lg flex items-center gap-2 btn-hover-lift"
           >
-            + Add Education
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Add Education
           </button>
         </div>
         {formData.education.map((edu, index) => (
-          <div key={index} className="mb-6 p-4 border border-gray-200 rounded-md">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-medium text-gray-700">Education {index + 1}</h3>
+          <div key={index} className="mb-6 p-6 border-2 border-gray-200 rounded-2xl bg-gray-50/50 hover:border-blue-300 hover:bg-blue-50/30 transition-all">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-base font-bold text-gray-800 flex items-center">
+                <span className="w-6 h-6 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center text-sm font-bold mr-2">
+                  {index + 1}
+                </span>
+                Education Entry
+              </h3>
               {formData.education.length > 1 && (
                 <button
                   onClick={() => removeEducation(index)}
-                  className="text-red-600 hover:text-red-800 text-sm"
+                  className="text-red-600 hover:text-red-800 text-sm font-semibold flex items-center gap-1 hover:bg-red-50 px-3 py-1.5 rounded-lg transition-all"
                 >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
                   Remove
                 </button>
               )}
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Institution *
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Institution <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"

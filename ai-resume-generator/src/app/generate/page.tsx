@@ -33,24 +33,37 @@ export default function GeneratePage() {
       {/* Main Content */}
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Info Banner */}
-        <div className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100 rounded-xl p-6 mb-8">
+        <div className="bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 border border-indigo-200/50 rounded-2xl p-6 mb-8 shadow-sm">
           <div className="flex items-start">
             <div className="flex-shrink-0">
-              <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
-                <svg className="h-5 w-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-200">
+                <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                 </svg>
               </div>
             </div>
-            <div className="ml-4 flex-1">
-              <h3 className="text-sm font-semibold text-gray-900 mb-2">
-                ✨ Pro Tips for a Standout Resume
+            <div className="ml-5 flex-1">
+              <h3 className="text-base font-bold text-gray-900 mb-3 flex items-center">
+                <span className="text-xl mr-2">✨</span>
+                Pro Tips for a Standout Resume
               </h3>
-              <div className="text-sm text-gray-700 space-y-1">
-                <p>• Use strong action verbs: Led, Built, Optimized, Increased</p>
-                <p>• Quantify achievements: 40% faster, $1M revenue, 500+ users</p>
-                <p>• Keep it concise: 1 page for most positions</p>
-                <p>• Use AI refinement to tailor content to specific job descriptions</p>
+              <div className="text-sm text-gray-700 space-y-2 leading-relaxed">
+                <p className="flex items-start">
+                  <span className="text-indigo-600 font-bold mr-2">•</span>
+                  <span><strong>Use strong action verbs:</strong> Led, Built, Optimized, Increased</span>
+                </p>
+                <p className="flex items-start">
+                  <span className="text-purple-600 font-bold mr-2">•</span>
+                  <span><strong>Quantify achievements:</strong> 40% faster, $1M revenue, 500+ users</span>
+                </p>
+                <p className="flex items-start">
+                  <span className="text-pink-600 font-bold mr-2">•</span>
+                  <span><strong>Keep it concise:</strong> 1 page for most positions</span>
+                </p>
+                <p className="flex items-start">
+                  <span className="text-orange-600 font-bold mr-2">•</span>
+                  <span><strong>Use AI refinement</strong> to tailor content to specific job descriptions</span>
+                </p>
               </div>
             </div>
           </div>
@@ -60,15 +73,20 @@ export default function GeneratePage() {
         <ResumeForm />
 
         {/* Footer Info */}
-        <div className="mt-12 text-center space-y-3">
-          <div className="flex items-center justify-center space-x-2 text-sm text-gray-600">
-            <svg className="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
-            <span>All data stays in your browser. Complete privacy guaranteed.</span>
+        <div className="mt-16 text-center space-y-4">
+          <div className="flex items-center justify-center space-x-3 text-sm">
+            <div className="flex items-center space-x-2 text-gray-700 bg-emerald-50 px-4 py-2 rounded-lg border border-emerald-200">
+              <svg className="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+              <span className="font-semibold">All data stays in your browser</span>
+            </div>
           </div>
+          <p className="text-sm text-gray-600 font-medium">
+            Professional ATS-optimized resumes in Harvard format
+          </p>
           <p className="text-xs text-gray-500">
-            Professional ATS-optimized resumes in Harvard format • Export as PDF, DOCX, TXT, or HTML
+            Export as PDF, DOCX, TXT, or HTML • 100% Free • No Sign Up Required
           </p>
         </div>
       </main>

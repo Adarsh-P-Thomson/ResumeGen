@@ -5,6 +5,11 @@
  */
 
 import OpenAI from 'openai';
+import { 
+  buildSystemMessage, 
+  buildResumeRefinementMessage, 
+  extractJSON 
+} from './promptLoader';
 
 export interface MegallmMessage {
   role: 'system' | 'user' | 'assistant';
@@ -56,53 +61,94 @@ export class MegallmClient {
     }
   }
 
-  async refineResume(resumeData: any, jobDescription: string): Promise<any> {
-    const systemPrompt = `You are an expert resume writer and ATS optimization specialist. Your task is to refine resume data to match a specific job description while maintaining Harvard formatting standards.
+  /**
+   * Filter resume data to exclude sections that don't need refinement
+   * Personal info (contact details) doesn't need AI enhancement
+   */
+  private filterResumeForRefinement(resumeData: any): any {
+    const { personal, ...refinableData } = resumeData;
+    return refinableData;
+  }
 
-Rules:
-1. Keep all factual information (names, dates, companies, schools) EXACTLY as provided - DO NOT change them
-2. Rewrite bullet points to highlight relevant skills and achievements for the job
-3. Use action verbs and quantifiable metrics where possible
-4. Optimize for ATS (Applicant Tracking Systems) by including relevant keywords from job description
-5. Maintain professional, concise language
-6. Return ONLY valid JSON with the EXACT same structure as input
-7. Do NOT add fictional experiences, qualifications, or inflate numbers
-8. Focus on emphasizing existing relevant experience and skills
+  /**
+   * Merge refined data back with original personal info
+   */
+  private mergeWithPersonalInfo(refinedData: any, originalPersonal: any): any {
+    return {
+      personal: originalPersonal,
+      ...refinedData
+    };
+  }
 
-Important: Return ONLY the JSON object, no additional text, explanations, or markdown formatting.`;
+  /**
+   * Refine resume with JD optimization (Pathway 2)
+   * Uses job description to optimize resume for specific role
+   * Note: Personal info (contact details) is excluded from AI refinement
+   */
+  async refineResumeWithJD(resumeData: any, jobDescription: string): Promise<any> {
+    // Keep personal info separate - it doesn't need AI refinement
+    const personalInfo = resumeData.personal;
+    const dataToRefine = this.filterResumeForRefinement(resumeData);
 
-    const userPrompt = `Job Description:
-${jobDescription}
-
-Current Resume Data:
-${JSON.stringify(resumeData, null, 2)}
-
-Please refine the resume data to better match this job description. Return ONLY the refined JSON data with the same structure.`;
+    const systemPrompt = buildSystemMessage('resume-jd-optimization');
+    const userPrompt = buildResumeRefinementMessage(dataToRefine, jobDescription);
 
     const messages: MegallmMessage[] = [
       { role: 'system', content: systemPrompt },
       { role: 'user', content: userPrompt },
     ];
 
+    console.log('Refining resume with JD optimization (excluding personal info)...');
     const response = await this.chat(messages, {
       temperature: 0.7,
       max_tokens: 4000,
     });
 
-    // Extract JSON from response (handle markdown code blocks)
-    let jsonText = response.trim();
+    const refinedData = extractJSON(response);
     
-    // Remove markdown code blocks (```json ... ``` or ``` ... ```)
-    const codeBlockMatch = jsonText.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
-    if (codeBlockMatch) {
-      jsonText = codeBlockMatch[1].trim();
-    }
+    // Merge back with original personal info
+    return this.mergeWithPersonalInfo(refinedData, personalInfo);
+  }
 
-    try {
-      return JSON.parse(jsonText);
-    } catch (error) {
-      console.error('Failed to parse AI response:', jsonText.substring(0, 500));
-      throw new Error('AI returned invalid JSON format');
+  /**
+   * Refine resume without JD (Pathway 1)
+   * General enhancement following Harvard guidelines
+   * Note: Personal info (contact details) is excluded from AI refinement
+   */
+  async refineResumeGeneral(resumeData: any): Promise<any> {
+    // Keep personal info separate - it doesn't need AI refinement
+    const personalInfo = resumeData.personal;
+    const dataToRefine = this.filterResumeForRefinement(resumeData);
+
+    const systemPrompt = buildSystemMessage('resume-refinement');
+    const userPrompt = buildResumeRefinementMessage(dataToRefine);
+
+    const messages: MegallmMessage[] = [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: userPrompt },
+    ];
+
+    console.log('Refining resume with general enhancement (excluding personal info)...');
+    const response = await this.chat(messages, {
+      temperature: 0.7,
+      max_tokens: 4000,
+    });
+
+    const refinedData = extractJSON(response);
+    
+    // Merge back with original personal info
+    return this.mergeWithPersonalInfo(refinedData, personalInfo);
+  }
+
+  /**
+   * Legacy method - Routes to appropriate refinement pathway
+   * @deprecated Use refineResumeWithJD or refineResumeGeneral directly
+   */
+  async refineResume(resumeData: any, jobDescription?: string): Promise<any> {
+    if (jobDescription && jobDescription.trim()) {
+      return this.refineResumeWithJD(resumeData, jobDescription);
+    } else {
+      return this.refineResumeGeneral(resumeData);
     }
   }
 }

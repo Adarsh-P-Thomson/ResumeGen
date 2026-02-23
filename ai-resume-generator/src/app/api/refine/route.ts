@@ -4,7 +4,11 @@ import { Resume } from '@/core/schemas/resume.schema';
 
 /**
  * POST /api/refine
- * Refine resume data using AI based on job description
+ * Refine resume data using AI
+ * 
+ * Two pathways:
+ * 1. General Enhancement: Refine resume without JD (improve clarity, metrics, Harvard standards)
+ * 2. JD Optimization: Refine resume based on job description (ATS optimization + keyword matching)
  */
 export async function POST(request: NextRequest) {
   try {
@@ -19,34 +23,40 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!jobDescription || jobDescription.trim().length === 0) {
-      return NextResponse.json(
-        { error: 'Job description is required for AI refinement' },
-        { status: 400 }
-      );
-    }
-
     // Initialize AI client with selected model
     const aiClient = new MegallmClient(
       process.env.MEGALLM_API_KEY,
       process.env.MEGALLM_API_URL,
-      model || process.env.MEGALLM_MODEL || 'gpt-oss'
+      model || process.env.MEGALLM_MODEL || 'deepseek-r1-distill-llama-70b'
     );
 
-    // Refine resume data
-    console.log(`Refining resume with AI using model: ${model || 'default'}...`);
-    const refinedData = await aiClient.refineResume(resumeData, jobDescription);
+    let refinedData: any;
+    let pathway: string;
 
-    console.log('Resume refined successfully');
+    // Determine which refinement pathway to use
+    if (jobDescription && jobDescription.trim().length > 0) {
+      // PATHWAY 2: JD-based optimization
+      pathway = 'JD Optimization';
+      console.log(`[AI Refinement] Using Pathway 2: JD-based optimization with model: ${model || 'default'}`);
+      refinedData = await aiClient.refineResumeWithJD(resumeData, jobDescription.trim());
+    } else {
+      // PATHWAY 1: General enhancement
+      pathway = 'General Enhancement';
+      console.log(`[AI Refinement] Using Pathway 1: General enhancement with model: ${model || 'default'}`);
+      refinedData = await aiClient.refineResumeGeneral(resumeData);
+    }
+
+    console.log(`[AI Refinement] Resume refined successfully using ${pathway}`);
     
     return NextResponse.json({
       success: true,
       refinedData,
-      message: 'Resume refined successfully using AI',
+      pathway,
+      message: `Resume refined successfully using AI (${pathway})`,
     });
 
   } catch (error: any) {
-    console.error('AI Refinement Error:', error);
+    console.error('[AI Refinement] Error:', error);
     
     return NextResponse.json(
       {
